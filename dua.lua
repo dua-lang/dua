@@ -50,6 +50,20 @@ local List = Type({
         end
         return "[" .. concat(res, ", ") .. "]"
     end;
+    _pretty = function(self, level)
+        level = (level or 0) + 1
+        local res = {}
+        for i, v in ipairs(self) do
+            if type(v) == "string" then
+                res[i] = rep("  ", level)..i..": "..format("%q", v)
+            elseif type(v) == "table" and getmt(v)._pretty then
+                res[i] = rep("  ", level)..i..": "..getmt(v)._pretty(v, level)
+            else
+                res[i] = rep("  ", level)..i..": "..tostring(v)
+            end
+        end
+        return "[\n"..concat(res, "\n").."\n"..rep("  ", level-1).."]"
+    end
 })
 
 local Dict = Type({
@@ -112,9 +126,28 @@ do
         return getmt(self)._tag .. "(" .. concat(res, ", ") .. ")"
     end
 
+    local function pretty(self, level)
+        level = (level or 0) + 1
+        local mt = getmt(self)
+        local res = {}
+        for i = 3, #self do
+            local v = self[i]
+            local prefix = rep("  ", level)..mt[i]..": "
+            if type(v) == "string" then
+                res[#res+1] = prefix..format("%q", v)
+            elseif type(v) == "table" and getmt(v)._pretty then
+                res[#res+1] = prefix..getmt(v)._pretty(v, level)
+            else
+                res[#res+1] = prefix..tostring(v)
+            end
+        end
+        return mt._tag.." ("..self[1]..", "..self[2]..")\n"..concat(res, "\n")
+    end
+
     local define = function(tag)
         return function(t)
             t._tag = tag
+            t._pretty = pretty
             t.__tostring = __tostring
             t.__index = __index
             for i, v in ipairs(t) do
@@ -435,7 +468,7 @@ local function scan()
                 end
             end
         end
-        print(p_tok)
+        -- print(p_tok)
     until p_tok ~= "//"
 end
 
@@ -1056,6 +1089,10 @@ local function parse_function()
     open_scope(symbols)
     local parameters = parse_parameters()
     local type = false -- TODO parse type
+    if p_tok == "->" then
+        scan()
+        type = parse_type_decl()
+    end
     sign[2] = ast.SignDecl{pos, p_end, receiver, name, parameters, type}
     local body = parse_body()
     close_scope()
@@ -1134,9 +1171,9 @@ local function parse_module(src, path, vars)
     p_val = nil
     p_comments = Dict{}
     p_symbols = Dict{
-        int  = ast.Symbol{"int", ast.Type{0, 0, "int"}};
-        real = ast.Symbol{"real", ast.Type{0, 0, "real"}};
-        byte = ast.Symbol{"byte", ast.Type{0, 0, "byte"}};
+        int  = ast.Symbol{"int", ast.Type{0, 0, "int", false}};
+        real = ast.Symbol{"real", ast.Type{0, 0, "real", false}};
+        byte = ast.Symbol{"byte", ast.Type{0, 0, "byte", false}};
     }
     p_level = 1
     p_scope = List{p_symbols}

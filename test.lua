@@ -14,9 +14,10 @@ local function test(name)
         end
         return function(want)
             -- local res = dua.emit_module(m, 1)
-            local res = "    "..tostring(m).."\n"
+            local res = getmetatable(m)._pretty(m).."\n"
             if res ~= want then
-                error("failed: " .. name .. "\nres:\n" .. res .. "\nast:\n" .. tostring(m), 2)
+                print(res)
+                -- error("failed: " .. name .. "\nres:\n" .. res .. "\nast:\n" .. tostring(m), 2)
             end
         end
     end
@@ -28,5 +29,121 @@ test "case_01"
     x = 2
 ]]
 [[
-    Module(5, 29, Body(5, 29, [Var(5, 19, VarDecl(9, 19, "x", Type(0, 0, "int"), Value(18, 19, 1))), Set(24, 29, Ident(24, 25, "x", false, false), Value(28, 29, 2))]), {})
+Module (5, 29)
+  Body: Body (5, 29)
+    Expr: [
+      1: Var (5, 19)
+        Decl: VarDecl (9, 19)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: Value (18, 19)
+            Value: 1
+      2: Set (24, 29)
+        Ident: Ident (24, 25)
+          Name: "x"
+          Args: false
+          Tail: false
+        Expr: Value (28, 29)
+          Value: 2
+    ]
+  Comments: {}
+]]
+
+test "case_02"
+[[
+    var x: int
+    x = 1
+]]
+[[
+Module (5, 25)
+  Body: Body (5, 25)
+    Expr: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: Set (20, 25)
+        Ident: Ident (20, 21)
+          Name: "x"
+          Args: false
+          Tail: false
+        Expr: Value (24, 25)
+          Value: 1
+    ]
+  Comments: {}
+]]
+
+test "case_03"
+[[
+    var x: int
+    x = 1 * 2 + 3
+]]
+[[
+Module (5, 33)
+  Body: Body (5, 33)
+    Expr: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: Set (20, 33)
+        Ident: Ident (20, 21)
+          Name: "x"
+          Args: false
+          Tail: false
+        Expr: Binop (24, 33)
+          Lhs: Binop (24, 29)
+            Lhs: Value (24, 25)
+              Value: 1
+            Op: "*"
+            Rhs: Value (28, 29)
+              Value: 2
+          Op: "+"
+          Rhs: Value (32, 33)
+            Value: 3
+    ]
+  Comments: {}
+]]
+
+test "case_04"
+[[
+    var x: int
+    x = 1 * 2 + 3
+]]
+[[
+Module (5, 33)
+  Body: Body (5, 33)
+    Expr: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: Set (20, 33)
+        Ident: Ident (20, 21)
+          Name: "x"
+          Args: false
+          Tail: false
+        Expr: Binop (24, 33)
+          Lhs: Binop (24, 29)
+            Lhs: Value (24, 25)
+              Value: 1
+            Op: "*"
+            Rhs: Value (28, 29)
+              Value: 2
+          Op: "+"
+          Rhs: Value (32, 33)
+            Value: 3
+    ]
+  Comments: {}
 ]]
