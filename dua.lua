@@ -195,7 +195,7 @@ do
     define "Case"   {"Pos", "Len", "Expr", "List", "Else"}
     define "When"   {"Pos", "Len", "List", "Expr", "Body"}
 
-    define "Body"  {"Pos", "Len", "Expr", "List"}
+    define "Body"  {"Pos", "Len", "List"}
     define "Local" {"Pos", "Len", "Expr", "List"}
 
     define "Return"   {"Pos", "End", "Expr"}
@@ -744,14 +744,17 @@ local function parse_if()
     local pos = p_tokpos
     scan() -- skip 'if' or 'elseif'
     local expr = parse_expr()
+    skip("then")
     local body = parse_body()
     local else_body = false
     if p_tok == "elseif" then
         else_body = parse_if()
+        return ast.If{pos, p_end, expr, body, else_body}
     elseif p_tok == "else" then
         scan()
         else_body = parse_body()
     end
+    skip("end")
     return ast.If{pos, p_end, expr, body, else_body}
 end
 
@@ -823,7 +826,9 @@ local function parse_for()
         scan()
         by = parse_expr()
     end
+    skip("do")
     local body = parse_body(nil, true)
+    skip("end")
     return ast.For{pos, p_end, id, from, to, by, body}
 end
 
@@ -834,6 +839,7 @@ local function parse_while()
     local expr = parse_expr()
     skip("do")
     local body = parse_body(nil, true)
+    skip("end")
     return ast.While{pos, p_end, expr, body}
 end
 
@@ -844,7 +850,7 @@ local function parse_repeat()
     local body = parse_body(nil, true)
     skip("until")
     local expr = parse_expr()
-    return ast.Repeat{pos, p_end, expr, body}
+    return ast.Repeat{pos, p_end, body, expr}
 end
 
 local END = set{"end", "elseif", "when", "else"}
@@ -1154,6 +1160,9 @@ parse_body = function(vars, loop)
         body[#body+1] = ast.Label({"label", 0, 0, "continue"})
         p_continue[p_looplevel] = false
         p_looplevel = p_looplevel - 1
+    end
+    if pos > p_end then
+        pos = p_end
     end
     return ast.Body{pos, p_end, body}
 end

@@ -31,7 +31,7 @@ test "case_01"
 [[
 Module (5, 29)
   Body: Body (5, 29)
-    Expr: [
+    List: [
       1: Var (5, 19)
         Decl: VarDecl (9, 19)
           Name: "x"
@@ -59,7 +59,7 @@ test "case_02"
 [[
 Module (5, 25)
   Body: Body (5, 25)
-    Expr: [
+    List: [
       1: Var (5, 15)
         Decl: VarDecl (9, 15)
           Name: "x"
@@ -86,7 +86,7 @@ test "case_03"
 [[
 Module (5, 33)
   Body: Body (5, 33)
-    Expr: [
+    List: [
       1: Var (5, 15)
         Decl: VarDecl (9, 15)
           Name: "x"
@@ -121,7 +121,7 @@ test "case_04"
 [[
 Module (5, 33)
   Body: Body (5, 33)
-    Expr: [
+    List: [
       1: Var (5, 15)
         Decl: VarDecl (9, 15)
           Name: "x"
@@ -156,7 +156,7 @@ test "case_05"
 [[
 Module (5, 35)
   Body: Body (5, 35)
-    Expr: [
+    List: [
       1: Var (5, 15)
         Decl: VarDecl (9, 15)
           Name: "x"
@@ -180,6 +180,314 @@ Module (5, 35)
                 Value: 2
               Rhs: Value (33, 34)
                 Value: 3
+    ]
+  Comments: {}
+]]
+
+test "case_06"
+[[
+    var x: int
+    for x = 1 to 10 by 2 do
+
+    end
+]]
+[[
+Module (5, 52)
+  Body: Body (5, 52)
+    List: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: For (20, 52)
+        Ident: Ident (24, 25)
+          Name: "x"
+          Args: false
+          Tail: false
+        From: Value (28, 29)
+          Value: 1
+        Limit: Value (33, 35)
+          Value: 10
+        Step: Value (39, 40)
+          Value: 2
+        Body: Body (43, 43)
+          List: [
+
+          ]
+    ]
+  Comments: {}
+]]
+
+test "case_07"
+[[
+    var x: int
+    var y: int
+    for x = 1 to 10 do
+        y = x
+    end
+]]
+[[
+Module (5, 75)
+  Body: Body (5, 75)
+    List: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: Var (20, 30)
+        Decl: VarDecl (24, 30)
+          Name: "y"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      3: For (35, 75)
+        Ident: Ident (39, 40)
+          Name: "x"
+          Args: false
+          Tail: false
+        From: Value (43, 44)
+          Value: 1
+        Limit: Value (48, 50)
+          Value: 10
+        Step: false
+        Body: Body (62, 67)
+          List: [
+            1: Set (62, 67)
+              Ident: Ident (62, 63)
+                Name: "y"
+                Args: false
+                Tail: false
+              Expr: Ident (66, 67)
+                Name: "x"
+                Args: false
+                Tail: false
+          ]
+    ]
+  Comments: {}
+]]
+
+test "case_08"
+[[
+    var x: int
+    while x < 10 do
+        x += 1
+    end
+]]
+[[
+Module (5, 58)
+  Body: Body (5, 58)
+    List: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: While (20, 58)
+        Expr: Binop (26, 32)
+          Op: "<"
+          Lhs: Ident (26, 27)
+            Name: "x"
+            Args: false
+            Tail: false
+          Rhs: Value (30, 32)
+            Value: 10
+        Body: Body (44, 50)
+          List: [
+            1: Inc (44, 50)
+              Ident: Ident (44, 45)
+                Name: "x"
+                Args: false
+                Tail: false
+              Expr: Value (49, 50)
+                Value: 1
+          ]
+    ]
+  Comments: {}
+]]
+
+test "case_09"
+[[
+    var x: int
+    repeat
+        x += 1
+    until x > 10
+]]
+[[
+Module (5, 58)
+  Body: Body (5, 58)
+    List: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: Repeat (20, 58)
+        Body: Body (35, 41)
+          List: [
+            1: Inc (35, 41)
+              Ident: Ident (35, 36)
+                Name: "x"
+                Args: false
+                Tail: false
+              Expr: Value (40, 41)
+                Value: 1
+          ]
+        Expr: Binop (52, 58)
+          Op: ">"
+          Lhs: Ident (52, 53)
+            Name: "x"
+            Args: false
+            Tail: false
+          Rhs: Value (56, 58)
+            Value: 10
+    ]
+  Comments: {}
+]]
+
+test "case_10"
+[[
+    var x: int
+    if x < 10 then
+        x += 1
+    end
+]]
+[[
+Module (5, 57)
+  Body: Body (5, 57)
+    List: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: If (20, 57)
+        Expr: Binop (23, 29)
+          Op: "<"
+          Lhs: Ident (23, 24)
+            Name: "x"
+            Args: false
+            Tail: false
+          Rhs: Value (27, 29)
+            Value: 10
+        Then: Body (43, 49)
+          List: [
+            1: Inc (43, 49)
+              Ident: Ident (43, 44)
+                Name: "x"
+                Args: false
+                Tail: false
+              Expr: Value (48, 49)
+                Value: 1
+          ]
+        Else: false
+    ]
+  Comments: {}
+]]
+
+test "case_11"
+[[
+    var x: int
+    if x < 10 then
+        x += 1
+    elseif x < 20 then
+        x += 2
+    elseif x < 30 then
+        x += 3
+    else
+        x += 4
+    end
+]]
+[[
+Module (5, 157)
+  Body: Body (5, 157)
+    List: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: If (20, 157)
+        Expr: Binop (23, 29)
+          Op: "<"
+          Lhs: Ident (23, 24)
+            Name: "x"
+            Args: false
+            Tail: false
+          Rhs: Value (27, 29)
+            Value: 10
+        Then: Body (43, 49)
+          List: [
+            1: Inc (43, 49)
+              Ident: Ident (43, 44)
+                Name: "x"
+                Args: false
+                Tail: false
+              Expr: Value (48, 49)
+                Value: 1
+          ]
+        Else: If (54, 157)
+          Expr: Binop (61, 67)
+            Op: "<"
+            Lhs: Ident (61, 62)
+              Name: "x"
+              Args: false
+              Tail: false
+            Rhs: Value (65, 67)
+              Value: 20
+          Then: Body (81, 87)
+            List: [
+              1: Inc (81, 87)
+                Ident: Ident (81, 82)
+                  Name: "x"
+                  Args: false
+                  Tail: false
+                Expr: Value (86, 87)
+                  Value: 2
+            ]
+          Else: If (92, 157)
+            Expr: Binop (99, 105)
+              Op: "<"
+              Lhs: Ident (99, 100)
+                Name: "x"
+                Args: false
+                Tail: false
+              Rhs: Value (103, 105)
+                Value: 30
+            Then: Body (119, 125)
+              List: [
+                1: Inc (119, 125)
+                  Ident: Ident (119, 120)
+                    Name: "x"
+                    Args: false
+                    Tail: false
+                  Expr: Value (124, 125)
+                    Value: 3
+              ]
+            Else: Body (143, 149)
+              List: [
+                1: Inc (143, 149)
+                  Ident: Ident (143, 144)
+                    Name: "x"
+                    Args: false
+                    Tail: false
+                  Expr: Value (148, 149)
+                    Value: 4
+              ]
     ]
   Comments: {}
 ]]
