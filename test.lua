@@ -100,13 +100,13 @@ Module (5, 33)
           Args: false
           Tail: false
         Expr: Binop (24, 33)
+          Op: "+"
           Lhs: Binop (24, 29)
+            Op: "*"
             Lhs: Value (24, 25)
               Value: 1
-            Op: "*"
             Rhs: Value (28, 29)
               Value: 2
-          Op: "+"
           Rhs: Value (32, 33)
             Value: 3
     ]
@@ -135,15 +135,51 @@ Module (5, 33)
           Args: false
           Tail: false
         Expr: Binop (24, 33)
+          Op: "+"
           Lhs: Binop (24, 29)
+            Op: "*"
             Lhs: Value (24, 25)
               Value: 1
-            Op: "*"
             Rhs: Value (28, 29)
               Value: 2
-          Op: "+"
           Rhs: Value (32, 33)
             Value: 3
+    ]
+  Comments: {}
+]]
+
+test "case_05"
+[[
+    var x: int
+    x = 1 * (2 + 3)
+]]
+[[
+Module (5, 35)
+  Body: Body (5, 35)
+    Expr: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: Set (20, 35)
+        Ident: Ident (20, 21)
+          Name: "x"
+          Args: false
+          Tail: false
+        Expr: Binop (24, 35)
+          Op: "*"
+          Lhs: Value (24, 25)
+            Value: 1
+          Rhs: Paren (28, 35)
+            Expr: Binop (29, 34)
+              Op: "+"
+              Lhs: Value (29, 30)
+                Value: 2
+              Rhs: Value (33, 34)
+                Value: 3
     ]
   Comments: {}
 ]]

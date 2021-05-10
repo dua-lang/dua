@@ -205,7 +205,7 @@ do
     define "Nop" {"Pos", "End"}
 
     define "Unop" {"Pos", "Len", "Op", "Rhs"}
-    define "Binop" {"Pos", "Len", "Lhs", "Op", "Rhs"}
+    define "Binop" {"Pos", "Len", "Op", "Lhs", "Rhs"}
     define "Paren" {"Pos", "Len", "Expr"}
 
 end
@@ -642,7 +642,7 @@ local function parse_mul()
         local op = p_tok
         scan()
         local rhs = parse_unary()
-        lhs = ast.Binop{pos, p_end, lhs, op, rhs}
+        lhs = ast.Binop{pos, p_end, op, lhs, rhs}
         pos = p_tokpos
     end
     return lhs
@@ -655,7 +655,7 @@ local function parse_add()
         local op = p_tok
         scan()
         local rhs = parse_mul()
-        lhs = ast.Binop{pos, p_end, lhs, op, rhs}
+        lhs = ast.Binop{pos, p_end, op, lhs, rhs}
         pos = p_tokpos
     end
     return lhs
@@ -668,7 +668,7 @@ local function parse_rel()
         local op = p_tok
         scan()
         local rhs = parse_add()
-        lhs = ast.Binop{pos, p_end, lhs, op, rhs}
+        lhs = ast.Binop{pos, p_end, op, lhs, rhs}
         pos = p_tokpos
     end
     return lhs
@@ -695,7 +695,7 @@ local function parse_and()
         local op = p_tok
         scan()
         local rhs = parse_not()
-        lhs = ast.Binop{pos, p_end, lhs, op, rhs}
+        lhs = ast.Binop{pos, p_end, op, lhs, rhs}
         pos = p_tokpos
     end
     return lhs
@@ -708,7 +708,7 @@ parse_expr = function()
         local op = p_tok
         scan()
         local rhs = parse_and()
-        lhs = ast.Binop{pos, p_end, lhs, op, rhs}
+        lhs = ast.Binop{pos, p_end, op, lhs, rhs}
     end
     return lhs
 end
