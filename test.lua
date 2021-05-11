@@ -541,3 +541,51 @@ Module (5, 69)
     ]
   Comments: {}
 ]]
+
+test "case_13"
+[[
+    type Record = record
+        x: int
+        y: int
+    end
+    var x: Record
+]]
+[[
+Module (5, 81)
+  Body: Body (5, 81)
+    List: [
+      1: Type (5, 63)
+        Name: "Record"
+        Decl: RecodDecl (19, 63)
+          List: [
+            1: FieldDecl (34, 40)
+              Name: "x"
+              Type: Type (0, 0)
+                Name: "int"
+                Decl: false
+            2: FieldDecl (49, 55)
+              Name: "y"
+              Type: Type (0, 0)
+                Name: "int"
+                Decl: false
+          ]
+      2: Var (68, 81)
+        Decl: VarDecl (72, 81)
+          Name: "x"
+          Type: RecodDecl (19, 63)
+            List: [
+              1: FieldDecl (34, 40)
+                Name: "x"
+                Type: Type (0, 0)
+                  Name: "int"
+                  Decl: false
+              2: FieldDecl (49, 55)
+                Name: "y"
+                Type: Type (0, 0)
+                  Name: "int"
+                  Decl: false
+            ]
+          Expr: false
+    ]
+  Comments: {}
+]]

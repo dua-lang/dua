@@ -220,7 +220,7 @@ end
 
 local KEYWORDS = set{
     "break", "continue", "else", "false", "for", "function", "if", "type", "var",
-    "nil", "and", "or", "by", "to", "not", "return", "true", "when", "case",
+    "nil", "and", "or", "by", "to", "not", "return", "true", "when", "case", "record",
     "const", "while", "do", "end", "repeat", "until", "then", "elseif", "local"
 }
 local RESERVED = set{"in"}
@@ -986,16 +986,17 @@ parse_type_decl = function()
         local list = List{}
         while p_tok ~= "end" do
             expect("ident")
-            local pos = p_pos
+            local pos = p_tokpos
             local name = p_lit
+            scan()
             skip(":")
             local type = parse_type_decl()
-            list[#list+1] = ast.FieldDecl(pos, p_end, name, type)
+            list[#list+1] = ast.FieldDecl{pos, p_end, name, type}
         end
         skip("end")
         return ast.RecodDecl{pos, p_end, list}
     end
-    errorf("expected type declaration")
+    errorf("expected type declaration, found '%s'", p_tok)
 end
 
 local function parse_type()
@@ -1004,8 +1005,9 @@ local function parse_type()
     expect("ident")
     local name = p_lit
     scan()
-    expect("=")
+    skip("=")
     local decl = parse_type_decl()
+    p_symbols[name] = ast.Symbol{name, decl}
     return ast.Type{pos, p_end, name, decl}
 end
 
