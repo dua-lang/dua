@@ -974,9 +974,10 @@ parse_type_decl = function()
             end
             size = sym
         elseif p_tok == "num" then
-            local pos = p_pos
+            local pos = p_tokpos
+            local val = p_val
             scan()
-            size = ast.Value(pos, p_end, p_val)
+            size = ast.Value{pos, p_end, val}
         end
         skip("]")
         local type = parse_type_decl()

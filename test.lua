@@ -589,3 +589,25 @@ Module (5, 81)
     ]
   Comments: {}
 ]]
+
+test "case_14"
+[[
+    var x: [10]int
+]]
+[[
+Module (5, 19)
+  Body: Body (5, 19)
+    List: [
+      1: Var (5, 19)
+        Decl: VarDecl (9, 19)
+          Name: "x"
+          Type: ArrayDecl (12, 19)
+            Size: Value (13, 15)
+              Value: 10
+            Type: Type (0, 0)
+              Name: "int"
+              Decl: false
+          Expr: false
+    ]
+  Comments: {}
+]]
