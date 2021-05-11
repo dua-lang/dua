@@ -449,10 +449,10 @@ local function scan()
                     next()
                 end
             elseif p_chr == 0x3E then
-                if p_chr == 0x3C then
+                if prev == 0x3C then
                     p_tok = "<>";
                     next()
-                elseif p_chr == 0x2D then
+                elseif prev == 0x2D then
                     p_tok = "->";
                     next()
                 end
@@ -475,7 +475,7 @@ end
 local function expect(t, l)
     if p_tok ~= t then
         local str = nil
-        if p_tok == "num" or p_tok == "str" or p_tok == "chr" or p_tok == "id" then
+        if p_tok == "num" or p_tok == "str" or p_tok == "chr" or p_tok == "ident" then
             str = p_lit
         else
             str = tostring(p_tok)
@@ -526,7 +526,7 @@ local function parse_tail(call)
         if p_tok == "." then
             scan()
             if KEYWORDS[p_lit] == nil then
-                expect("id")
+                expect("ident")
             end
             local name = p_lit
             local args = false
@@ -865,7 +865,7 @@ local function parse_return()
     if p_tok and not END[p_tok] then
         expect("end")
     end
-    return ast.Return{"return", pos, p_end, expr}
+    return ast.Return{pos, p_end, expr}
 end
 
 local function parse_break()
@@ -875,7 +875,7 @@ local function parse_break()
     if p_tok and not END[p_tok] then
         expect("end")
     end
-    return ast.Break{"break", pos, p_end}
+    return ast.Break{pos, p_end}
 end
 
 local function parse_continue()
@@ -886,7 +886,7 @@ local function parse_continue()
         expect("end")
     end
     p_continue[p_looplevel] = true
-    return ast.Continue{"continue", pos, p_end}
+    return ast.Continue{pos, p_end}
 end
 
 local parse_type_decl
@@ -931,7 +931,7 @@ local function parse_const()
     if p_tok == "(" then
         scan()
         local list = List{}
-        while p_tok == "id" do
+        while p_tok == "ident" do
             list[#list+1] = parse_const_decl()
             if p_tok == ";" then
                 scan()
@@ -940,7 +940,7 @@ local function parse_const()
         skip(")")
         return ast.Const{pos, p_end, list}
     end
-    expect("id")
+    expect("ident")
 end
 
 local TYPEDECL = set{ast.Type, ast.RecodDecl, ast.ArrayDecl}
@@ -1038,16 +1038,25 @@ local function parse_parameters()
     skip("(")
     local list = List{}
     while true do
-        if p_tok ~= "id" then
+        local parpos = p_tokpos
+        local var = false
+        if p_tok == "var" then
+            var = true
+            scan()
+        end
+        if p_tok ~= "ident" then
             break
         end
-        local id = ast.Parameter{p_tokpos, #p_lit, p_lit}
-        list[#list + 1] = id
-        if p_symbols[p_lit] then
-            errorf("parameter '%s' is already declared", p_lit)
-        end
-        p_symbols[p_lit] = id
+        local name = p_lit
         scan()
+        skip(":")
+        local type = parse_type_decl()
+        local id = ast.Parameter{parpos, p_end, name, type, var}
+        list[#list + 1] = id
+        if p_symbols[name] then
+            errorf("parameter '%s' is already declared", name)
+        end
+        p_symbols[name] = id
         if p_tok ~= "," then
             break
         end
@@ -1066,10 +1075,10 @@ local function parse_function()
     if p_tok == "(" then
         local receiver_pos = p_tokpos
         scan()
-        expect("id")
+        expect("ident")
         local receiver_name = p_lit
         scan()
-        expect("id")
+        expect("ident")
         local receiver_type = p_lit
         local sym = find_symbol(receiver_type)
         if not sym then
@@ -1083,15 +1092,14 @@ local function parse_function()
         receiver = ast.Receiver({"receiver", receiver_pos, p_end, receiver_name, receiver_type})
         symbols[receiver_name] = ast.Symbol{"receiver_name", receiver}
     end
-    expect("id")
+    expect("ident")
     name = p_lit
     if find_symbol(name) then
         errorf("shadowing of variable is prohibited, you need to change the name '%s'", name)
     end
-    local name_pos = p_tokpos
     scan()
-    local sign = ast.Symbol{name, false}
-    p_symbols[name] = sign
+    local sym = ast.Symbol{name, false}
+    p_symbols[name] = sym
     open_scope(symbols)
     local parameters = parse_parameters()
     local type = false -- TODO parse type
@@ -1099,11 +1107,13 @@ local function parse_function()
         scan()
         type = parse_type_decl()
     end
-    sign[2] = ast.SignDecl{pos, p_end, receiver, name, parameters, type}
+    local sign = ast.SignDecl{pos, p_end, receiver, name, parameters, type}
+    sym[2] = sign
     local body = parse_body()
     close_scope()
-    local func = ast.FuncDecl({pos, p_end, sign, body})
+    local func = ast.FuncDecl{pos, p_end, sign, body}
     p_symbols[name] = func
+    scan()
     return func
 end
 

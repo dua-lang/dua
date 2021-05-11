@@ -491,3 +491,53 @@ Module (5, 157)
     ]
   Comments: {}
 ]]
+
+test "case_12"
+[[
+    function foo(x: int, y: int) -> int
+        return x * y
+    end
+]]
+[[
+Module (5, 69)
+  Body: Body (5, 69)
+    List: [
+      1: FuncDecl (5, 61)
+        Sign: SignDecl (5, 40)
+          Receiver: false
+          Name: "foo"
+          Parameters: Parameters (17, 33)
+            List: [
+              1: Parameter (18, 24)
+                Name: "x"
+                Type: Type (0, 0)
+                  Name: "int"
+                  Decl: false
+                Var: false
+              2: Parameter (26, 32)
+                Name: "y"
+                Type: Type (0, 0)
+                  Name: "int"
+                  Decl: false
+                Var: false
+            ]
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+        Body: Body (49, 61)
+          List: [
+            1: Return (49, 61)
+              Expr: Binop (56, 61)
+                Op: "*"
+                Lhs: Ident (56, 57)
+                  Name: "x"
+                  Args: false
+                  Tail: false
+                Rhs: Ident (60, 61)
+                  Name: "y"
+                  Args: false
+                  Tail: false
+          ]
+    ]
+  Comments: {}
+]]
