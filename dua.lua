@@ -775,6 +775,7 @@ local function parse_case()
         case = parse_expr()
         expect("when")
         while p_tok == "when" do
+            local whenpos = p_tokpos
             scan()
             local vals = List{}
             while true do
@@ -791,7 +792,7 @@ local function parse_case()
             end
             skip("then")
             local body = parse_body()
-            list[#list+1] = ast.When{pos, p_end, vals, expr, body}
+            list[#list+1] = ast.When{whenpos, p_end, vals, expr, body}
         end
     end
     local else_body = false
@@ -799,7 +800,7 @@ local function parse_case()
         scan()
         else_body = parse_body()
     end
-    skip("}")
+    skip("end")
     return ast.Case{pos, p_end, case, list, else_body}
 end
 

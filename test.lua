@@ -632,3 +632,81 @@ Module (5, 17)
     ]
   Comments: {}
 ]]
+
+test "case_16"
+[[
+    var x: int
+    case x
+    when 1, 2 then
+        x += 1
+    when 3 then
+        x += 2
+    else
+        x += 3
+    end
+]]
+[[
+Module (5, 123)
+  Body: Body (5, 123)
+    List: [
+      1: Var (5, 15)
+        Decl: VarDecl (9, 15)
+          Name: "x"
+          Type: Type (0, 0)
+            Name: "int"
+            Decl: false
+          Expr: false
+      2: Case (20, 123)
+        Expr: Ident (25, 26)
+          Name: "x"
+          Args: false
+          Tail: false
+        List: [
+          1: When (31, 60)
+            List: [
+              1: Value (36, 37)
+                Value: 1
+              2: Value (39, 40)
+                Value: 2
+            ]
+            Expr: false
+            Body: Body (54, 60)
+              List: [
+                1: Inc (54, 60)
+                  Ident: Ident (54, 55)
+                    Name: "x"
+                    Args: false
+                    Tail: false
+                  Expr: Value (59, 60)
+                    Value: 1
+              ]
+          2: When (65, 91)
+            List: [
+              1: Value (70, 71)
+                Value: 3
+            ]
+            Expr: false
+            Body: Body (85, 91)
+              List: [
+                1: Inc (85, 91)
+                  Ident: Ident (85, 86)
+                    Name: "x"
+                    Args: false
+                    Tail: false
+                  Expr: Value (90, 91)
+                    Value: 2
+              ]
+        ]
+        Else: Body (109, 115)
+          List: [
+            1: Inc (109, 115)
+              Ident: Ident (109, 110)
+                Name: "x"
+                Args: false
+                Tail: false
+              Expr: Value (114, 115)
+                Value: 3
+          ]
+    ]
+  Comments: {}
+]]
